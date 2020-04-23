@@ -3,12 +3,13 @@ import { Button, Text, View, ScrollView, Alert, StyleSheet } from 'react-native'
 import Card from '../components/Card';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../App'
+import Animated from 'react-native-reanimated';
+
+import { customFonts } from '../App';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 
@@ -26,9 +27,9 @@ export default function HomeScreen({navigation, route}) {
   }, [navigation, signOut]);
 
   return (
-    <>
-      <Card type='о здравии' username={route.params?.username} {...{navigation}} />
-      <Card type='о упокоении' username={route.params?.username} {...{navigation}}/>
-    </>
+    <View style={styles.container}>
+      <Card type='о здравии' order={ new Animated.Value(1) } username={route.params?.username} {...{navigation}} />
+      <Card type='о упокоении' order={ new Animated.Value(2) } username={route.params?.username} {...{navigation}}/>
+    </View>
   );
 }
