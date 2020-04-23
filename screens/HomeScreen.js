@@ -1,35 +1,59 @@
 import * as React from 'react';
-import { Button, Text, View, ScrollView, Alert, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import Card from '../components/Card';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../App'
 import Animated from 'react-native-reanimated';
 
 import { customFonts } from '../App';
+import { COLORS } from '../constants/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.middle,
   },
+  header: {
+    width: '100%',
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  logoContainer: {
+    marginLeft: 11,
+  },
+  logo: {
+
+  },
+  username: {
+
+  },
+  logout: {
+    marginRight: 11,
+  }
 });
 
 export default function HomeScreen({navigation, route}) {
   const { signOut } = React.useContext(AuthContext);
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Ionicons name="ios-log-out" size={32} color="green" onPress={signOut} />
-      ),
-      headerLeft: () => (
-        <Ionicons name="ios-add" size={32} color="green" onPress={()=> navigation.navigate('Adding')} />
-      ),
-    });
-  }, [navigation, signOut]);
 
   return (
-    <View style={styles.container}>
-      <Card type='о здравии' order={ new Animated.Value(1) } username={route.params?.username} {...{navigation}} />
-      <Card type='о упокоении' order={ new Animated.Value(2) } username={route.params?.username} {...{navigation}}/>
-    </View>
+      <SafeAreaView style={styles.container}>
+        <View style={ styles.header }>
+          <View style={styles.logoContainer}>
+            <View style={styles.logo}>
+              <Text style={{ fontFamily: 'Montserrat-Bold', color: COLORS.darkest, fontSize: 19 }} >МОИ СИНОДИКИ</Text>
+            </View>
+            <View style={styles.username}>
+              <Text style={{ fontFamily: 'Montserrat-Light', color: COLORS.light, fontSize: 14 }} >{route.params?.username}</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.logout}>
+            <Ionicons name="ios-log-out" size={34} color={COLORS.deepBlue} onPress={signOut} />
+          </TouchableOpacity>
+        </View>
+        <Card type='о здравии' order={ new Animated.Value(1) } username={route.params?.username} {...{navigation}} />
+        <Card type='о упокоении' order={ new Animated.Value(2) } username={route.params?.username} {...{navigation}}/>
+      </SafeAreaView>
   );
 }

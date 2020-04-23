@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AsyncStorage, Button, Text, TextInput, View } from 'react-native';
+import { AsyncStorage, Button, Text, TextInput, View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './screens/SplashScreen';
@@ -9,6 +9,7 @@ import SignInScreen from './screens/SignInScreen';
 import SignUpScreen from './screens/SignUpScreen';
 
 import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 
 export const AuthContext = React.createContext();
@@ -28,6 +29,16 @@ export default function App({ navigation }) {
   const loadFontsAsync = async () => {
     await Font.loadAsync(customFonts);
     setFontsLoaded(true);
+  }
+
+  const cacheImages = async (images) => {
+    return await images.map(image => {
+      if (typeof image === 'string') {
+        return Image.prefetch(image);
+      } else {
+        return Asset.fromModule(image).downloadAsync();
+      }
+    });
   }
 
   const [state, dispatch] = React.useReducer(
@@ -98,6 +109,12 @@ export default function App({ navigation }) {
 
     bootstrapAsync();
     loadFontsAsync();
+    cacheImages([
+      require('./assets/iconForCard.png'),
+      require('./assets/splash.png'),
+      require('./assets/darkShadow.png'),
+      require('./assets/darkInnerShadow.png'),
+    ]);
   }, []);
 
 const authContext = React.useMemo(
@@ -178,7 +195,7 @@ const authContext = React.useMemo(
               <Stack.Screen name="Home"
                 component={HomeScreen}
                 initialParams={{ username: state.userToken.username }}
-                options={{ headerTitle: state.userToken.username}}
+                options={{ headerShown: false }}
                   />
               <Stack.Screen name="Adding"
                 component={AddingScreen}

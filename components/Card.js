@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Modal, Button, Text, View, StyleSheet, Dimensions, Platform, Alert, TouchableHighlight, ScrollView } from 'react-native';
+import { Modal, Button, Text, View, StyleSheet, Dimensions, Platform, Alert, TouchableHighlight, ScrollView, Image } from 'react-native';
 import Content from './Content';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
@@ -10,9 +10,9 @@ const { Value, set, useCode, interpolate, Extrapolate, cond, eq, block, event, a
 import { timing, panGestureHandler, moving, withSpringTransition } from "react-native-redash";
 
 const { width, height } = Dimensions.get('window');
-const SIZE = width - 110;
+const SIZE = width - 130;
 const CARD_WIDTH = SIZE;
-const CARD_HEIGHT = SIZE*1.5;
+const CARD_HEIGHT = SIZE*1.8;
 
 const styles = StyleSheet.create({
   container: {
@@ -21,13 +21,17 @@ const styles = StyleSheet.create({
     left: width/2,
     marginTop: -CARD_HEIGHT/2,
     marginLeft: -CARD_WIDTH/2,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 6,
+    borderRadius: 18,
     width: CARD_WIDTH,
     height: CARD_HEIGHT,
-    backgroundColor: COLORS.middle,
+    backgroundColor: COLORS.dark,
+    borderColor: COLORS.middle,
+    shadowColor: COLORS.lightest,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: .6,
+    shadowRadius: 10,
     elevation: (Platform.OS === 'android') ? 50 : 0,
   },
 });
@@ -125,7 +129,10 @@ export default function Card(props) {
               { translateX: _transX },
               { translateY: _transY }] }
         ]}>
-        <Text style={{fontSize: 20, fontFamily: 'Montserrat-Bold', color: cardColor}}>{props.type}</Text>
+        <View style={{ marginTop: 10, marginBottom: 60, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
+          <Image source={require('../assets/iconForCard.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
+        </View>
+        <Text style={{fontSize: 22, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }}>{props.type}</Text>
           <Modal
             animationType="fade"
             transparent={false}
