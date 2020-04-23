@@ -4,9 +4,10 @@ import Content from './Content';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
 import Animated from 'react-native-reanimated';
+import { PanGestureHandler, TapGestureHandler, State } from 'react-native-gesture-handler';
 
-const { Value, set, useCode, interpolate, Extrapolate, cond, eq } = Animated;
-import {timing} from "react-native-redash";
+const { Value, set, useCode, interpolate, Extrapolate, cond, eq, block, event, add, sub } = Animated;
+import { timing, panGestureHandler, moving, withSpringTransition } from "react-native-redash";
 
 const { width, height } = Dimensions.get('window');
 const SIZE = width - 110;
@@ -33,72 +34,121 @@ const styles = StyleSheet.create({
 
 export default function Card(props) {
 
+  const gestureState = new Value(State.UNDETERMINED);
+  const dragX = new Value(0);
+  const dragY = new Value(0);
+  const transX = new Value(0);
+  const transY = new Value(0);
+  const gestureHandler = event([
+    {
+      nativeEvent: {
+        state: gestureState,
+        translationY: dragY,
+        translationX: dragX,
+      },
+    },
+  ]);
+
+  const prevDragX = new Value(0);
+  const prevDragY = new Value(0);
+
+  const _transY = block([
+    cond(
+      eq(gestureState, State.ACTIVE),
+      [
+        set(transY, add(transY, sub(dragY, prevDragY))),
+        set(prevDragY, dragY),
+      ],
+      set(prevDragY, 0)
+    ),
+    transY,
+  ]);
+
+  const _transX = block([
+    cond(
+      eq(gestureState, State.ACTIVE),
+      [
+        set(transX, add(transX, sub(dragX, prevDragX))),
+        set(prevDragX, dragX),
+      ],
+      set(prevDragX, 0)
+    ),
+    transX,
+  ]);
+
   const active = new Value(0);
   const scale = cond(eq(props.order, 1),
   interpolate(active, {
     inputRange: [0, 1],
-    outputRange: [ .2, 1],
+    outputRange: [ .5, 1],
     extrapolate: Extrapolate.CLAMP,
   }),
   interpolate(active, {
     inputRange: [0, 1],
-    outputRange: [ .2, .9],
+    outputRange: [ .5, .9],
     extrapolate: Extrapolate.CLAMP,
   })
 );
-  const transY = cond(eq(props.order, 1),
+
+  const opacity = cond(eq(props.order, 1),
     interpolate(active, {
       inputRange: [0, 1],
-      outputRange: [ 100, 0],
+      outputRange: [ 0, 1],
       extrapolate: Extrapolate.CLAMP,
     }),
     interpolate(active, {
       inputRange: [0, 1],
-      outputRange: [ 100, 60],
+      outputRange: [ 0, .7],
       extrapolate: Extrapolate.CLAMP,
     })
   );
 
+
   const [modalVisible, setModalVisible] = React.useState(false);
   const cardColor = props.type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
 
-  useCode(() => set(
-    active,
-    timing({ from: 0, to: 1, duration: 550 })
-  ),[active]);
+  useCode(() => block(
+    set(
+      active,
+      timing({ from: 0, to: 1, duration: 750 })
+    )
+  ),[]);
 
   return (
-      <TouchableHighlight style={{ zIndex: props.type === 'о здравии' ? 100 : 1 }} activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => setModalVisible(true)}>
-      <Animated.View 
-        style={[
-          styles.container, 
-          { 
-            transform: [ { scale },
-            { translateY: transY }] }
-      ]}>
-      <Text style={{fontSize: 20, fontFamily: 'Montserrat-Bold', color: cardColor}}>{props.type}</Text>
-        <Modal
-          animationType="fade"
-          transparent={false}
-          visible={modalVisible}
-          >
-          <View style={{ marginTop: 22, justifyContent: 'flex-start'}}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', backgroundColor: COLORS.dark, height: 80 }}>
-              <Text>{props.type}</Text>
+    <TouchableHighlight style={{ zIndex: props.type === 'о здравии' ? 100 : 1 }} activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => setModalVisible(true)}>
+      <PanGestureHandler onGestureEvent={ gestureHandler } onHandlerStateChange={ gestureHandler } >
+        <Animated.View 
+          style={[
+            styles.container, 
+            { opacity,
+              transform: [ { scale },
+              { translateX: _transX },
+              { translateY: _transY }] }
+        ]}>
+        <Text style={{fontSize: 20, fontFamily: 'Montserrat-Bold', color: cardColor}}>{props.type}</Text>
+          <Modal
+            animationType="fade"
+            transparent={false}
+            visible={modalVisible}
+            >
+            <View style={{ marginTop: 22, justifyContent: 'flex-start'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', backgroundColor: COLORS.dark, height: 80 }}>
+                <Text>{props.type}</Text>
 
-              <TouchableHighlight
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                }}>
-                <Text style={{ margin: 5, fontSize: 20 }}>X</Text>
-              </TouchableHighlight>
+                <TouchableHighlight
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                  }}>
+                  <Text style={{ margin: 5, fontSize: 20 }}>X</Text>
+                </TouchableHighlight>
+              </View>
+              <ScrollView>
+                <Content type={props.type} username={props.username} {...{modalVisible, setModalVisible}} navigation={props.navigation}/>
+              </ScrollView>
             </View>
-            <ScrollView>
-              <Content type={props.type} username={props.username} {...{modalVisible, setModalVisible}} navigation={props.navigation}/>
-            </ScrollView>
-          </View>
-        </Modal>
-        </Animated.View>
+          </Modal>
+          </Animated.View>
+        </PanGestureHandler>
       </TouchableHighlight>
   );
 }
