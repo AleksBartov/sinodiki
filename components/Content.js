@@ -1,11 +1,15 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, ActivityIndicator, Modal, Button } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator, Modal, Button, Dimensions } from 'react-native';
 import MySectionList from './MySectionList';
 import { COLORS } from '../constants/colors';
+
+const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
+    height: height,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.middle,
@@ -59,7 +63,7 @@ export default function Content(props) {
 
   return (
     <View style={styles.container}>{
-      names.length < 1 ? <ActivityIndicator color='red' size='large' /> : <MySectionList {...{ names }} />
+      names.length < 1 ? <ActivityIndicator color={COLORS.deepBlue} size='large' /> : <MySectionList {...{ names }} />
     }
     <Modal
       animationType="slide"

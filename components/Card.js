@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Modal, Button, Text, View, StyleSheet, Dimensions, Platform, Alert, TouchableHighlight, ScrollView, Image } from 'react-native';
+import { Modal, Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView } from 'react-native';
 import Content from './Content';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
@@ -138,21 +138,24 @@ export default function Card(props) {
             transparent={false}
             visible={modalVisible}
             >
-            <View style={{ marginTop: 22, justifyContent: 'flex-start'}}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', backgroundColor: COLORS.dark, height: 80 }}>
-                <Text>{props.type}</Text>
-
-                <TouchableHighlight
-                  onPress={() => {
-                    setModalVisible(!modalVisible);
-                  }}>
-                  <Text style={{ margin: 5, fontSize: 20 }}>X</Text>
-                </TouchableHighlight>
+            <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
+              <TouchableHighlight
+                style={{ position: 'absolute', top: 30, left: 10, zIndex: 10 }}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                }}>
+                <Text style={{ margin: 5, fontSize: 20, fontFamily: 'Montserrat-Bold', color: COLORS.deepBlue }}>+=</Text>
+              </TouchableHighlight>
+              <View style={{ justifyContent: 'flex-start', alignItems: 'center'}}>
+                <View style={{ marginTop: 10, marginBottom: 12, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
+                  <Image source={require('../assets/iconForListScreen.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
+                </View>
+                <Text style={{ marginBottom: 20, fontSize: 28, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }} >{props.type}</Text>
+                <ScrollView>
+                  <Content type={props.type} username={props.username} {...{modalVisible, setModalVisible}} navigation={props.navigation}/>
+                </ScrollView>
               </View>
-              <ScrollView>
-                <Content type={props.type} username={props.username} {...{modalVisible, setModalVisible}} navigation={props.navigation}/>
-              </ScrollView>
-            </View>
+            </SafeAreaView>
           </Modal>
           </Animated.View>
         </PanGestureHandler>

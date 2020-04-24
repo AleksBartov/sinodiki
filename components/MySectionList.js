@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, SectionList, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, SectionList, StyleSheet, SafeAreaView, Dimensions, Platform } from 'react-native';
 import Constants from "expo-constants";
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
@@ -16,17 +16,25 @@ const styles = StyleSheet.create({
       backgroundColor: COLORS.middle,
       alignItems: 'center',
       justifyContent: 'center',
-      width: width,
-      paddingVertical: 35,
-      paddingHorizontal: 10,
+      width: width-20,
+      marginVertical: 6,
+      paddingVertical: 30,
+      paddingHorizontal: 15,
+      borderRadius: 15,
+      borderColor: COLORS.middle,
+      shadowColor: COLORS.lightest,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: .3,
+      shadowRadius: 6,
+      elevation: (Platform.OS === 'android') ? 50 : 0,
     },
     header: {
-      fontSize: 24,
+      fontSize: 22,
       color: COLORS.deepBlue,
-      backgroundColor: COLORS.darkest,
       fontFamily: 'Montserrat-Bold',
-      padding: 15,
+      padding: 10,
       width: width,
+      textTransform: 'lowercase',
     },
     title: {
       fontSize: 26,
@@ -35,8 +43,9 @@ const styles = StyleSheet.create({
       color: COLORS.lightest,
     },
     info: {
-      fontSize: 18,
-      fontFamily: 'Montserrat-Light',
+      fontSize: 12,
+      color: COLORS.light,
+      fontFamily: 'Montserrat-Bold',
       marginVertical: 4,
     },
     comment: {
@@ -48,29 +57,21 @@ const styles = StyleSheet.create({
 
   const Item = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.title}>{item.name}</Text>
-      <Text style={styles.info}>({item.fathername} {item.surname})</Text>
-      <Text style={styles.comment}>{item.comment}</Text>
+      <Text style={styles.title}>{item.other}{item.name}</Text>
+      <Text style={styles.info}>({item.fathername} {item.surname}, {item.comment})</Text>
     </View>
   );
   
   const MySectionList = ({ names }) => (
           <SectionList
-        sections={names}
-        ItemSeparatorComponent={
-          () => {
-            return (
-              <View style={{ width: width, height: .4, backgroundColor: COLORS.light }}>
-              </View>
-            )
-          }
-        }
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => <Item {...{item}} />}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.header}>{title}</Text>
-        )}
-      />
+            contentContainerStyle={{ alignItems: 'center' }}
+            sections={names}
+            keyExtractor={(item, index) => item + index}
+            renderItem={({ item }) => <Item {...{item}} />}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={styles.header}>{title}</Text>
+            )}
+          />
   );
 
 export default MySectionList;
