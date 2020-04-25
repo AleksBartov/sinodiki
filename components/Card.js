@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Modal, Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView } from 'react-native';
-import Content from './Content';
+import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView } from 'react-native';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
 import Animated from 'react-native-reanimated';
-import { PanGestureHandler, TapGestureHandler, State } from 'react-native-gesture-handler';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 const { Value, set, useCode, interpolate, Extrapolate, cond, eq, block, event, add, sub } = Animated;
-import { timing, panGestureHandler, moving, withSpringTransition } from "react-native-redash";
+import { timing } from "react-native-redash";
 
 const { width, height } = Dimensions.get('window');
 const SIZE = width - 130;
@@ -38,11 +37,14 @@ const styles = StyleSheet.create({
 
 export default function Card(props) {
 
+  const { type, username } = props;
+
   const gestureState = new Value(State.UNDETERMINED);
   const dragX = new Value(0);
   const dragY = new Value(0);
   const transX = new Value(0);
   const transY = new Value(0);
+
   const gestureHandler = event([
     {
       nativeEvent: {
@@ -107,8 +109,6 @@ export default function Card(props) {
     })
   );
 
-
-  const [modalVisible, setModalVisible] = React.useState(false);
   const cardColor = props.type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
 
   useCode(() => block(
@@ -119,7 +119,7 @@ export default function Card(props) {
   ),[]);
 
   return (
-    <TouchableHighlight style={{ zIndex: props.type === 'о здравии' ? 100 : 1 }} activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => setModalVisible(true)}>
+    <TouchableHighlight style={{ zIndex: props.type === 'о здравии' ? 100 : 1 }} activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => props.navigation.navigate('listNames', { cardColor, type, username })}>
       <PanGestureHandler onGestureEvent={ gestureHandler } onHandlerStateChange={ gestureHandler } >
         <Animated.View 
           style={[
@@ -128,35 +128,11 @@ export default function Card(props) {
               transform: [ { scale },
               { translateX: _transX },
               { translateY: _transY }] }
-        ]}>
-        <View style={{ marginTop: 10, marginBottom: 60, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
-          <Image source={require('../assets/iconForCard.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
-        </View>
-        <Text style={{fontSize: 22, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }}>{props.type}</Text>
-          <Modal
-            animationType="fade"
-            transparent={false}
-            visible={modalVisible}
-            >
-            <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
-              <TouchableHighlight
-                style={{ position: 'absolute', top: 30, left: 10, zIndex: 10 }}
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                }}>
-                <Text style={{ margin: 5, fontSize: 20, fontFamily: 'Montserrat-Bold', color: COLORS.deepBlue }}>+=</Text>
-              </TouchableHighlight>
-              <View style={{ justifyContent: 'flex-start', alignItems: 'center'}}>
-                <View style={{ marginTop: 10, marginBottom: 12, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
-                  <Image source={require('../assets/iconForListScreen.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
-                </View>
-                <Text style={{ marginBottom: 20, fontSize: 28, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }} >{props.type}</Text>
-                <ScrollView>
-                  <Content type={props.type} username={props.username} {...{modalVisible, setModalVisible}} navigation={props.navigation}/>
-                </ScrollView>
-              </View>
-            </SafeAreaView>
-          </Modal>
+            ]}>
+            <View style={{ marginTop: 10, marginBottom: 60, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
+              <Image source={require('../assets/iconForCard.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
+            </View>
+            <Text style={{fontSize: 22, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }}>{props.type}</Text>
           </Animated.View>
         </PanGestureHandler>
       </TouchableHighlight>

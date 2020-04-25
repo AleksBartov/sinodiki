@@ -11,6 +11,7 @@ import SignUpScreen from './screens/SignUpScreen';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
+import listNamesScreen from './screens/listNamesScreen';
 
 export const AuthContext = React.createContext();
 export let customFonts = {
@@ -201,6 +202,10 @@ const authContext = React.useMemo(
                 component={AddingScreen}
                 options={{ headerTitle: "новая запись"}}
                  />
+              <Stack.Screen name="listNames"
+                component={listNamesScreen}
+                options={{ headerShown: false }}
+                  />
             </>
           )}
         </Stack.Navigator>

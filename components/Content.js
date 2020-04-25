@@ -1,20 +1,9 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, ActivityIndicator, Modal, Button, Dimensions } from 'react-native';
+import { Text, View, ActivityIndicator, Modal, Button, Dimensions } from 'react-native';
 import MySectionList from './MySectionList';
 import { COLORS } from '../constants/colors';
 
 const { height } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: height,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.middle,
-  },
-});
 
 export default function Content(props) {
 
@@ -62,7 +51,7 @@ export default function Content(props) {
   }, []);
 
   return (
-    <View style={styles.container}>{
+    <View>{
       names.length < 1 ? <ActivityIndicator color={COLORS.deepBlue} size='large' /> : <MySectionList {...{ names }} />
     }
     <Modal
