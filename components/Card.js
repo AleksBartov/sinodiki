@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: (height/2) -40,
-    left: width/2,
     marginTop: -CARD_HEIGHT/2,
     marginLeft: -CARD_WIDTH/2,
     justifyContent: 'flex-start',
@@ -82,52 +81,28 @@ export default function Card(props) {
     transX,
   ]);
 
-  const active = new Value(0);
-  const scale = cond(eq(props.order, 1),
-  interpolate(active, {
-    inputRange: [0, 1],
-    outputRange: [ .5, 1],
+  const scale = props.type === 'о здравии' ? interpolate(_transX, {
+    inputRange: [-300, 0, 300],
+    outputRange: [.8, 1,.8],
     extrapolate: Extrapolate.CLAMP,
-  }),
-  interpolate(active, {
-    inputRange: [0, 1],
-    outputRange: [ .5, .9],
+  }) : interpolate(_transX, {
+    inputRange: [-300, (width/2 - width/1.2), 300],
+    outputRange: [.8, 1, .8],
     extrapolate: Extrapolate.CLAMP,
-  })
-);
-
-  const opacity = cond(eq(props.order, 1),
-    interpolate(active, {
-      inputRange: [0, 1],
-      outputRange: [ 0, 1],
-      extrapolate: Extrapolate.CLAMP,
-    }),
-    interpolate(active, {
-      inputRange: [0, 1],
-      outputRange: [ 0, .7],
-      extrapolate: Extrapolate.CLAMP,
-    })
-  );
+  });
 
   const cardColor = props.type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
-
-  useCode(() => block(
-    set(
-      active,
-      timing({ from: 0, to: 1, duration: 750 })
-    )
-  ),[]);
 
   return (
     <TouchableHighlight style={{ zIndex: props.type === 'о здравии' ? 100 : 1 }} activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => props.navigation.navigate('listNames', { cardColor, type, username })}>
       <PanGestureHandler onGestureEvent={ gestureHandler } onHandlerStateChange={ gestureHandler } >
         <Animated.View 
           style={[
-            styles.container, 
-            { opacity,
-              transform: [ { scale },
-              { translateX: _transX },
-              { translateY: _transY }] }
+            styles.container,
+            { left: props.type === 'о здравии' ? width/2 : width/1.2,
+              transform: [ 
+              { scale },
+              { translateX: _transX }] }
             ]}>
             <View style={{ marginTop: 10, marginBottom: 60, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
               <Image source={require('../assets/iconForCard.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />

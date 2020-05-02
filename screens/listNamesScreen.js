@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView, Button } from 'react-native';
 import Content from '../components/Content';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
-import Animated from 'react-native-reanimated';
+import Animated, { Transitioning, Transition } from 'react-native-reanimated';
 import { red } from 'react-native-redash';
+import Add from '../components/bottomTabComponents/Add';
 
 const { width, height } = Dimensions.get('window');
 const SIZE = width - 130;
@@ -34,20 +35,13 @@ const styles = StyleSheet.create({
     elevation: (Platform.OS === 'android') ? 50 : 0,
   },
   bottomTabs: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 50,
     borderColor: COLORS.middle,
     backgroundColor: COLORS.middle,
-    shadowColor: COLORS.lightest,
+    shadowColor: COLORS.light,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: .6,
     shadowRadius: 4,
     elevation: (Platform.OS === 'android') ? 50 : 0,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexDirection: 'row',
    },
 });
 
@@ -70,13 +64,6 @@ export default function listNamesScreen({ navigation, route }) {
           <Text style={{ marginBottom: 20, fontSize: 28, fontFamily: 'Montserrat-Bold', color: route.params?.cardColor, textTransform: 'uppercase' }} >{route.params?.type}</Text>
           <Content type={route.params?.type} username={route.params?.username} navigation={navigation}/>
           </View>
-          <View style={styles.bottomTabs}>
-              <Ionicons name="ios-list" size={34} color={COLORS.green} />
-              <Ionicons name="ios-search" size={34} color={COLORS.deepBlue} />
-              <Ionicons name="ios-play" size={34} color={COLORS.deepBlue} />
-              <Ionicons name="ios-add" size={34} color={COLORS.deepBlue} />
-              <Ionicons name="ios-settings" size={34} color={COLORS.deepBlue} />
-          </View>
       </SafeAreaView>
     )
   }
@@ -91,10 +78,48 @@ export default function listNamesScreen({ navigation, route }) {
     )
   }
 
+  function Play() {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
+          <View style={{ backgroundColor: red }}>
+            <Text>PLAY</Text>
+          </View>
+      </SafeAreaView>
+    )
+  }
+
+  <Add />
+
+  function Settings() {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
+          <View style={{ backgroundColor: red }}>
+            <Text>SETTINGS</Text>
+          </View>
+      </SafeAreaView>
+    )
+  }
+
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="List" component={List} />
-      <Tab.Screen name="Search" component={Search} />
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
+          let iconName = `ios-${route.name}`;
+          return <Ionicons name={iconName} size={30} color={color} />;
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: COLORS.green,
+        inactiveTintColor: COLORS.deepBlue,
+        showLabel: false,
+        style: { ...styles.bottomTabs }
+      }}
+    >
+      <Tab.Screen name="list" component={List} />
+      <Tab.Screen name="search" component={Search} />
+      <Tab.Screen name="play" component={Play} />
+      <Tab.Screen name="add" component={Add} />
+      <Tab.Screen name="settings" component={Settings} />
     </Tab.Navigator>
   );
 }
