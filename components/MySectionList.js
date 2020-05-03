@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
   const MySectionList = ({ names }) => {
     
     return  (
+      <View style={{ paddingBottom: 270 }}>
         <SectionList
           contentContainerStyle={{ alignItems: 'center' }}
           sections={names}
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
             <Text style={styles.header}>{title}</Text>
           )}
         />
+      </View>
       );
   }
   

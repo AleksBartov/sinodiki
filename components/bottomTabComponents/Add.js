@@ -30,10 +30,11 @@ export default function Add({ navigation, route }) {
           <View style={{...styles.header}}>
             <Text style={{...styles.headerText}}>новое поминовение</Text>
           </View>
-          <ScrollView contentContainerStyle={{ flex: 1 }}>
-            <RadioComponent question='тип синодика' answers={['о здравии', 'о упокоении']} />
-            <RadioComponent question='пол' answers={['мужской', 'женский']} />
-            <RadioComponent question='что-то еще' answers={['о здравии', 'о упокоении']} />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{ flex: 1 }}>
+              <RadioComponent question='тип синодика' answers={['о здравии', 'о упокоении']} />
+              <RadioComponent question='пол' answers={['мужской', 'женский']} />
+            </View>
           </ScrollView>
         </SafeAreaView>
     )

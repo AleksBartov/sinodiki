@@ -8,6 +8,7 @@ import { customFonts } from '../App';
 import Animated, { Transitioning, Transition } from 'react-native-reanimated';
 import { red } from 'react-native-redash';
 import Add from '../components/bottomTabComponents/Add';
+import Settings from '../components/bottomTabComponents/Settings';
 
 const { width, height } = Dimensions.get('window');
 const SIZE = width - 130;
@@ -87,18 +88,10 @@ export default function listNamesScreen({ navigation, route }) {
       </SafeAreaView>
     )
   }
-
-  <Add />
-
-  function Settings() {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
-          <View style={{ backgroundColor: red }}>
-            <Text>SETTINGS</Text>
-          </View>
-      </SafeAreaView>
-    )
-  }
+  <>
+    <Add />
+    <Settings />
+  </>
 
   return (
     <Tab.Navigator
@@ -119,7 +112,7 @@ export default function listNamesScreen({ navigation, route }) {
       <Tab.Screen name="search" component={Search} />
       <Tab.Screen name="play" component={Play} />
       <Tab.Screen name="add" component={Add} initialParams={{ navigation, route }} />
-      <Tab.Screen name="settings" component={Settings} />
+      <Tab.Screen name="settings" component={Settings} initialParams={{ navigation, route }} />
     </Tab.Navigator>
   );
 }
