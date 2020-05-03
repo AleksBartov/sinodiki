@@ -58,10 +58,10 @@ export default function listNamesScreen({ navigation, route }) {
           <Ionicons name="ios-arrow-round-back" size={34} color={COLORS.deepBlue} />
           </TouchableHighlight>
           <View style={{ justifyContent: 'flex-start', alignItems: 'center'}}>
-          <View style={{ marginTop: 10, marginBottom: 12, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ marginTop: 10, marginBottom: 12, width: CARD_WIDTH/3, height: CARD_WIDTH/3, justifyContent: 'center', alignItems: 'center' }}>
               <Image source={require('../assets/iconForListScreen.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
           </View>
-          <Text style={{ marginBottom: 20, fontSize: 28, fontFamily: 'Montserrat-Bold', color: route.params?.cardColor, textTransform: 'uppercase' }} >{route.params?.type}</Text>
+          <Text style={{ marginBottom: 20, fontSize: 25, fontFamily: 'Montserrat-Bold', color: route.params?.cardColor, textTransform: 'uppercase' }} >{route.params?.type}</Text>
           <Content type={route.params?.type} username={route.params?.username} navigation={navigation}/>
           </View>
       </SafeAreaView>
@@ -118,7 +118,7 @@ export default function listNamesScreen({ navigation, route }) {
       <Tab.Screen name="list" component={List} />
       <Tab.Screen name="search" component={Search} />
       <Tab.Screen name="play" component={Play} />
-      <Tab.Screen name="add" component={Add} />
+      <Tab.Screen name="add" component={Add} initialParams={{ navigation, route }} />
       <Tab.Screen name="settings" component={Settings} />
     </Tab.Navigator>
   );

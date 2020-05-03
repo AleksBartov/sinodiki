@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
       padding: 10,
       width: width,
       textTransform: 'lowercase',
+      backgroundColor: COLORS.middle,
     },
     title: {
       fontSize: 26,
