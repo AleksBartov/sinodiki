@@ -3,6 +3,7 @@ import { View, Text, SafeAreaView, TouchableHighlight, StyleSheet, ScrollView } 
 import { COLORS } from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import RadioComponent from './RadioComponent';
+import InputFormComponent from './InputFormComponent';
 
 const styles = StyleSheet.create({
   header: {
@@ -34,6 +35,9 @@ export default function Add({ navigation, route }) {
             <View style={{ flex: 1 }}>
               <RadioComponent question='тип синодика' answers={['о здравии', 'о упокоении']} />
               <RadioComponent question='пол' answers={['мужской', 'женский']} />
+              <InputFormComponent question='имя' />
+              <InputFormComponent question='фамилия' />
+              <InputFormComponent question='отчество' />
             </View>
           </ScrollView>
         </SafeAreaView>

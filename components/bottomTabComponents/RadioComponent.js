@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableHighlight, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, SafeAreaView, TouchableHighlight, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import { COLORS } from '../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { Transition, Transitioning } from 'react-native-reanimated';
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 3,
     borderRadius: 10,
     borderColor: COLORS.middle,
     shadowColor: COLORS.light,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.middle,
   },
   radioButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
   },
 })
@@ -76,12 +76,14 @@ export default function RadioComponent ({ question, answers }) {
               <TouchableWithoutFeedback onPress={() => setActive(0)}
                 style={{...styles.radioButton}}>
                 <View style={{...styles.innerBox}}>
+                    { active === 0 && <ImageBackground source={require('../../assets/formInnerDarkShadow.png')} resizeMode='cover' style={{...StyleSheet.absoluteFill, width: null, height: null }} /> }
                     <Text style={[styles.radioButtonText, { color: active === 0 ? COLORS.lightest : COLORS.dark } ]}>{answers[0]}</Text>
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback onPress={() => setActive(1)}
                 style={{...styles.radioButton}}>
                 <View style={{...styles.innerBox}}>
+                    { active === 1 && <ImageBackground source={require('../../assets/formInnerDarkShadow.png')} resizeMode='cover' style={{...StyleSheet.absoluteFill, width: null, height: null }} /> }
                     <Text style={[styles.radioButtonText, { color: active === 1 ? COLORS.lightest : COLORS.dark}]}>{answers[1]}</Text>
                 </View>
               </TouchableWithoutFeedback>
