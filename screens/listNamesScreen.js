@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView, Button } from 'react-native';
 import Content from '../components/Content';
+import { AuthContext } from '../App';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
@@ -50,20 +51,30 @@ const Tab = createBottomTabNavigator();
 
 export default function listNamesScreen({ navigation, route }) {
 
+  const { subtitleNumber, setNumberNames } = React.useContext(AuthContext);
+
   function List() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
           <TouchableHighlight
           style={{ position: 'absolute', top: 30, left: 10, zIndex: 10 }}
-          onPress={() => navigation.goBack()}>
-          <Ionicons name="ios-arrow-round-back" size={34} color={COLORS.deepBlue} />
+          onPress={() => {
+            setNumberNames(0);
+            navigation.goBack();
+          }}>
+            <Ionicons name="ios-arrow-round-back" size={34} color={COLORS.deepBlue} />
           </TouchableHighlight>
           <View style={{ justifyContent: 'flex-start', alignItems: 'center'}}>
-          <View style={{ marginTop: 10, marginBottom: 12, width: CARD_WIDTH/3, height: CARD_WIDTH/3, justifyContent: 'center', alignItems: 'center' }}>
-              <Image source={require('../assets/iconForListScreen.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
-          </View>
-          <Text style={{ marginBottom: 20, fontSize: 25, fontFamily: 'Montserrat-Bold', color: route.params?.cardColor, textTransform: 'uppercase' }} >{route.params?.type}</Text>
-          <Content type={route.params?.type} username={route.params?.username} navigation={navigation}/>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', width: '100%', marginBottom: 5 }}>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ marginHorizontal: 8, fontSize: 25, fontFamily: 'Montserrat-Bold', color: route.params?.cardColor, textTransform: 'uppercase' }} >{route.params?.type}</Text>
+                <Text>{`( ${ subtitleNumber } имен )`}</Text>
+              </View>
+              <View style={{ marginHorizontal: 8, width: CARD_WIDTH/3.5, height: CARD_WIDTH/3.5, justifyContent: 'center', alignItems: 'center' }}>
+                <Image source={require('../assets/iconForListScreen.png')} style={{ width: '100%', height: '100%', margin: 2 }} resizeMode='contain' />
+              </View>
+            </View>  
+            <Content type={route.params?.type} username={route.params?.username} navigation={navigation}/>
           </View>
       </SafeAreaView>
     )

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
       padding: 10,
       width: width,
       textTransform: 'lowercase',
-      backgroundColor: COLORS.middle,
+      backgroundColor: 'rgba(255,255,255,.1)',
     },
     title: {
       fontSize: 26,
@@ -81,9 +81,11 @@ const styles = StyleSheet.create({
   );
   
   const MySectionList = ({ names }) => {
+
+
     
     return  (
-      <View style={{ paddingBottom: 270 }}>
+      <View style={{ paddingBottom: 110 }}>
         <SectionList
           contentContainerStyle={{ alignItems: 'center' }}
           sections={names}

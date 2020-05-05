@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './screens/SplashScreen';
 import HomeScreen from './screens/HomeScreen';
-import AddingScreen from './screens/AddingScreen';
 import SignInScreen from './screens/SignInScreen';
 import SignUpScreen from './screens/SignUpScreen';
 
@@ -26,6 +25,7 @@ const Stack = createStackNavigator();
 export default function App({ navigation }) {
 
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
+  const [ subtitleNumber, setSubtitleNumber ] = React.useState(0);
 
   const loadFontsAsync = async () => {
     await Font.loadAsync(customFonts);
@@ -159,8 +159,10 @@ const authContext = React.useMemo(
       },
       closeSignInModal: () => dispatch({ type: 'CLOSE_SIGN_IN_MODAL' }),
       openModal: state.modalOpened,
+      setNumberNames: (num) => setSubtitleNumber(num),
+      subtitleNumber,
     }),
-    [state.modalOpened]
+    [state.modalOpened, subtitleNumber]
   );
 
   return (
@@ -198,10 +200,6 @@ const authContext = React.useMemo(
                 initialParams={{ username: state.userToken.username }}
                 options={{ headerShown: false }}
                   />
-              <Stack.Screen name="Adding"
-                component={AddingScreen}
-                options={{ headerTitle: "новая запись"}}
-                 />
               <Stack.Screen name="listNames"
                 component={listNamesScreen}
                 options={{ headerShown: false }}

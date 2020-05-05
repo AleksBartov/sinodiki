@@ -2,10 +2,13 @@ import * as React from 'react';
 import { Text, View, ActivityIndicator, Modal, Button, Dimensions } from 'react-native';
 import MySectionList from './MySectionList';
 import { COLORS } from '../constants/colors';
+import { AuthContext } from '../App';
 
 const { height } = Dimensions.get('window');
 
 export default function Content(props) {
+
+  const { setNumberNames } = React.useContext(AuthContext);
 
   const myKey = 'apiKey=sKw_oqVSmdk0cj8XolfkSyap__JKRPLt';
   // const myCollection = 'iereiAleksandrBartov';
@@ -25,6 +28,7 @@ export default function Content(props) {
 
           // CREATE SPECIAL OBJECT TO HOLDE ONLY UNICE DATA
         let GROUPS = new Set();
+        let length = 0;
         allNamesArr.forEach(person=>person.group.forEach(g=>GROUPS.add(g)));
         let structuredArray = [...GROUPS]
           .map(group=>{
@@ -39,6 +43,7 @@ export default function Content(props) {
           allNamesArr
           .filter(p => p.live === props.type)
           .forEach(person => {
+            length++;
             if(GROUPS.has(person.group[0])) {
               structuredArray.forEach(obj=>{
                 if(obj.title === person.group[0]) obj.data.push(person);
@@ -47,6 +52,7 @@ export default function Content(props) {
           });
         // here we have to transform data for sectionList by Array.reduce()
         setNames(structuredArray);
+        setNumberNames(length);
     });
   }, []);
 

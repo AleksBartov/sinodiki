@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, SafeAreaView, TouchableHighlight, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import { COLORS } from '../../constants/colors';
-import { Ionicons } from '@expo/vector-icons';
-import Animated, { Transition, Transitioning } from 'react-native-reanimated';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   radioContainer: {
