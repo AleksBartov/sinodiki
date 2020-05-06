@@ -1,7 +1,15 @@
 import React from 'react'
-import { View, Text, TouchableWithoutFeedback, ImageBackground, Dimensions, StyleSheet } from 'react-native'
+import { View,
+  Text,
+  TouchableWithoutFeedback,
+  ImageBackground,
+  Dimensions,
+  StyleSheet,
+  Modal, 
+  Button} from 'react-native'
 import { COLORS } from '../../constants/colors'
 import { Ionicons } from '@expo/vector-icons';
+import HealthM from './listForSelect/HealthM';
 
 const { width } = Dimensions.get('window');
 
@@ -47,6 +55,7 @@ const styles = StyleSheet.create({
 
 const SelectFormComponent = ({ type }) => {
     const [ active, setActive ] = React.useState(0);
+    const [ language, setLanguage ] = React.useState('java')
     return (
         <View style={{ flex:1, flexDirection: 'row',  justifyContent: 'center', alignItems: 'center' }}>
             <TouchableWithoutFeedback onPress={() => setActive(1)} style={{...styles.radioButton}}>
@@ -58,6 +67,13 @@ const SelectFormComponent = ({ type }) => {
             <View style={{  }}>
                 <Ionicons name={ active === 1 ? 'ios-arrow-up' : 'ios-arrow-down' } size={30} color={ active === 1 ? COLORS.lightest : COLORS.dark} />
             </View>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={active === 1}
+              >
+              <HealthM {...{ setActive }} />
+            </Modal>
         </View>
     )
 }
