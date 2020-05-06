@@ -1,7 +1,7 @@
 import React from 'react'
-import { View, Text, Dimensions, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, Dimensions, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import { COLORS } from '../../../constants/colors'
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons} from '@expo/vector-icons';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window')
@@ -27,11 +27,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     item: {
+        flexDirection: 'row',
         width: width - 20,
         height: 60,
         backgroundColor: COLORS.lightest,
         borderBottomWidth: 2,
         borderBottomColor: COLORS.light,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 15,
     },
     okButton: {
         marginVertical: 10,
@@ -46,11 +50,34 @@ const styles = StyleSheet.create({
 
 const HealthM = ({ setActive }) => {
 
-    const list = [
-        'болящий',
-        'путешествующий',
-        'без вести сущий'
-    ]
+    const [ list, setList ] = React.useState([
+        {
+            title: 'болящий (бол.)',
+            checked: false,
+        },
+        {
+            title: 'путешествующий (пут.)',
+            checked: false,
+        },
+        {
+            title: 'без вести сущий (бвсущ.)',
+            checked: false,
+        }
+    ]);
+
+    const listChangeHelper = index => {
+        let newData = list.map((data, i) => {
+            if ( index === i) {
+                return {
+                    ...data,
+                    checked: !data.checked,
+                }
+            }
+            return data
+        });
+
+        setList(newData);
+    }
 
     return (
         <View style={{ ...styles.container }}>
@@ -64,11 +91,16 @@ const HealthM = ({ setActive }) => {
             <ScrollView>
                 <View>
                     {
-                        list.map((type, index) => {
+                        list.map(({ title, checked }, index) => {
                             return (
-                                <View key={type} style={{...styles.item}}>
-                                    <Text>{ type }</Text>
-                                </View>
+                                <TouchableOpacity 
+                                    onPress={() => listChangeHelper(index)}
+                                    key={title}
+                                    style={{...styles.item}}
+                                >
+                                    <Ionicons name={ checked ? 'ios-radio-button-on' : 'ios-radio-button-off' } size={30} color={ COLORS.red } />
+                                    <Text>{ title }</Text>
+                                </TouchableOpacity>
                             )
                         })
                     }
@@ -79,7 +111,7 @@ const HealthM = ({ setActive }) => {
                     setActive(0);
                     }}
                 style={{ ...styles.okButton }}>
-                <Text style={{ fontSize: 22, fontWeight: '700', color: COLORS.deepBlue }}>ВЫБРАТЬ</Text>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: COLORS.deepBlue }}>ВЫБРАТЬ</Text>
             </TouchableWithoutFeedback>
         </View>
     )
