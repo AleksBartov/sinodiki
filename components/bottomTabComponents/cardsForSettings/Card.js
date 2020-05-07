@@ -1,28 +1,33 @@
 import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { COLORS } from '../../../constants/colors';
-import Animated, { add } from 'react-native-reanimated';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { panGestureHandler } from 'react-native-redash';
+import Animated, { add, event, Value } from 'react-native-reanimated';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window')
 
 const CARD_SIZE = width - 100;
 
 export default function Card ({ card, index, offsets }) {
-    const {
-        gestureHandler,
-        state,
-        translationX,
-        translationY
-    } = panGestureHandler();
+    const gestureState = new Value(State.UNDETERMINED);
+    const dragX = new Value(0);
+    const dragY = new Value(0);
+    const gestureHandler = event([
+        {
+            nativeEvent: {
+                state: gestureState,
+                translationX: dragX,
+                translationY: dragY
+            }
+        }
+    ])
 
-    const translateX = add(offsets[index].x, translationX);
+    const translateX = add(offsets[index].x, dragX);
 
-    const translateY = add(offsets[index].y, translationY);
+    const translateY = add(offsets[index].y, dragY);
   
     return (
-        <PanGestureHandler {...gestureHandler} >
+        <PanGestureHandler onGestureEvent={gestureHandler} onHandlerStateChange={gestureHandler} >
             <Animated.View 
                 style={{
                     position: 'absolute',
