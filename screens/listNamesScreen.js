@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
-import Animated, { Transitioning, Transition } from 'react-native-reanimated';
+import { Transitioning, Transition } from 'react-native-reanimated';
 import { red } from 'react-native-redash';
 import Add from '../components/bottomTabComponents/Add';
 import Settings from '../components/bottomTabComponents/Settings';
@@ -53,6 +53,17 @@ export default function listNamesScreen({ navigation, route }) {
 
   const { subtitleNumber, setNumberNames } = React.useContext(AuthContext);
 
+  React.useEffect(() => {
+    ref.current.animateNextTransition();
+  }, [subtitleNumber]);
+
+  const ref = React.useRef();
+  const transition = <Transition.Together>
+                        <Transition.In type='slide-top' durationMs={2000} />
+                        <Transition.Change />
+                        <Transition.Out />
+                    </Transition.Together>
+
   function List() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle }}>
@@ -66,10 +77,10 @@ export default function listNamesScreen({ navigation, route }) {
           </TouchableHighlight>
           <View style={{ justifyContent: 'flex-start', alignItems: 'center'}}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', width: '100%', marginBottom: 5 }}>
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Transitioning.View ref={ ref } transition={ transition } style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ marginHorizontal: 8, fontSize: 25, fontFamily: 'Montserrat-Bold', color: route.params?.cardColor, textTransform: 'uppercase' }} >{route.params?.type}</Text>
-                <Text>{`( ${ subtitleNumber } имен )`}</Text>
-              </View>
+                { subtitleNumber !== 0 && <Text>{`( ${ subtitleNumber } имен )`}</Text>}
+              </Transitioning.View>
               <View style={{ marginHorizontal: 8, width: CARD_WIDTH/3.5, height: CARD_WIDTH/3.5, justifyContent: 'center', alignItems: 'center' }}>
                 <Image source={require('../assets/iconForListScreen.png')} style={{ width: '100%', height: '100%', margin: 2 }} resizeMode='contain' />
               </View>

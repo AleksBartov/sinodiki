@@ -48,22 +48,17 @@ const styles = StyleSheet.create({
     }
 })
 
-const HealthM = ({ setActive, setType }) => {
+const DeathM = ({ setActive, setType }) => {
 
     const [ list, setList ] = React.useState([
         {
-            title: 'болящий (бол.)',
-            abr: 'бол.',
+            title: 'новопреставленный (н.п.)',
+            abr: 'н.п.',
             checked: false,
         },
         {
-            title: 'путешествующий (пут.)',
-            abr: 'пут.',
-            checked: false,
-        },
-        {
-            title: 'без вести сущий (бвсущ.)',
-            abr: 'бвсущ.',
+            title: 'приснопомянаемый (п.п.)',
+            abr: 'п.п.',
             checked: false,
         }
     ]);
@@ -127,4 +122,4 @@ const HealthM = ({ setActive, setType }) => {
     )
 }
 
-export default HealthM
+export default DeathM

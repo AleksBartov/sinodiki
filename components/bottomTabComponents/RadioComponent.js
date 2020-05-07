@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
 })
 
-export default function RadioComponent ({ question, answers }) {
+export default function RadioComponent ({ question, answers, globalStatusHandler }) {
 
     const [ active, setActive ] = React.useState(0);
 
@@ -71,14 +71,20 @@ export default function RadioComponent ({ question, answers }) {
               <Text style={{...styles.questionText}}>{question}</Text>
             </View>
             <View style={{ flexDirection: 'row' }}>
-              <TouchableWithoutFeedback onPress={() => setActive(0)}
+              <TouchableWithoutFeedback onPress={() => {
+                globalStatusHandler(answers[0]);
+                setActive(0);
+              }}
                 style={{...styles.radioButton}}>
                 <View style={{...styles.innerBox}}>
                     { active === 0 && <ImageBackground source={require('../../assets/formInnerDarkShadow.png')} resizeMode='cover' style={{...StyleSheet.absoluteFill, width: null, height: null }} /> }
                     <Text style={[styles.radioButtonText, { color: active === 0 ? COLORS.lightest : COLORS.dark } ]}>{answers[0]}</Text>
                 </View>
               </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback onPress={() => setActive(1)}
+              <TouchableWithoutFeedback onPress={() => {
+                globalStatusHandler(answers[1]);
+                setActive(1);
+              }}
                 style={{...styles.radioButton}}>
                 <View style={{...styles.innerBox}}>
                     { active === 1 && <ImageBackground source={require('../../assets/formInnerDarkShadow.png')} resizeMode='cover' style={{...StyleSheet.absoluteFill, width: null, height: null }} /> }

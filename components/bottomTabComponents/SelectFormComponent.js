@@ -10,6 +10,11 @@ import { View,
 import { COLORS } from '../../constants/colors'
 import { Ionicons } from '@expo/vector-icons';
 import HealthM from './listForSelect/HealthM';
+import HealthF from './listForSelect/HealthF';
+import AgeM from './listForSelect/AgeM';
+import AgeF from './listForSelect/AgeF';
+import DeathM from './listForSelect/DeathM';
+import DeathF from './listForSelect/DeathF';
 
 const { width } = Dimensions.get('window');
 
@@ -53,7 +58,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const SelectFormComponent = ({ type }) => {
+const SelectFormComponent = ({ type, setType, select, title }) => {
     const [ active, setActive ] = React.useState(0);
     const [ language, setLanguage ] = React.useState('java')
     return (
@@ -61,18 +66,28 @@ const SelectFormComponent = ({ type }) => {
             <TouchableWithoutFeedback onPress={() => setActive(1)} style={{...styles.radioButton}}>
                 <View style={{...styles.innerBox}}>
                     { active === 1 && <ImageBackground source={require('../../assets/formInnerDarkShadow.png')} resizeMode='cover' style={{...StyleSheet.absoluteFill, width: null, height: null }} /> }
-                    <Text style={[styles.radioButtonText, { color: active === 1 ? COLORS.lightest : COLORS.dark } ]}>{type}</Text>
+                    <Text style={[styles.radioButtonText, { color: COLORS.lightest } ]}>{type}</Text>
                 </View>
             </TouchableWithoutFeedback>
-            <View style={{  }}>
+            <TouchableWithoutFeedback onPress={() => setActive(1)}>
                 <Ionicons name={ active === 1 ? 'ios-arrow-up' : 'ios-arrow-down' } size={30} color={ active === 1 ? COLORS.lightest : COLORS.dark} />
-            </View>
+            </TouchableWithoutFeedback>
             <Modal
               animationType="slide"
               transparent={true}
               visible={active === 1}
               >
-              <HealthM {...{ setActive }} />
+
+                {
+                  title === 'health' && select === 'живой' ? (<HealthM {...{ setActive, setType }} />)
+                   : title === 'health' && select === 'живая' ? (<HealthF {...{ setActive, setType }} />)
+                   : title === 'health' && select === 'усопший' ? (<DeathM {...{ setActive, setType }} />)
+                   : title === 'health' && select === 'усопшая' ? (<DeathF {...{ setActive, setType }} />)
+                   : title === 'age' && select === 'живой' ? (<AgeM {...{ setActive, setType }} />)
+                   : title === 'age' && select === 'живая' ? (<AgeF {...{ setActive, setType }} />)
+                   : title === 'age' && select === 'усопший' ? (<AgeM {...{ setActive, setType }} />)
+                   : (<AgeF {...{ setActive, setType }} />)
+                }
             </Modal>
         </View>
     )

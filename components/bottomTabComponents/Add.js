@@ -22,6 +22,37 @@ const styles = StyleSheet.create({
 })
 
 export default function Add({ navigation, route }) {
+
+    const [otherHealth, setOtherHealth] = React.useState(['---']);
+    const [otherAge, setOtherAge] = React.useState(['---']);
+
+    const [ select, setSelect ] = React.useState('живой');
+
+    const globalStatusHandler = info => {
+      let current;
+      if(info === 'женский' && select === 'живой') {
+        current = 'живая'
+      } else if(info === 'женский' && select === 'усопший') {
+        current = 'усопшая'
+      } else if(info === 'мужской' && select === 'усопшая') {
+        current = 'усопший'
+      } else if(info === 'мужской' && select === 'живая') {
+        current = 'живой'
+      } else if(info === 'о здравии' && select === 'усопший') {
+        current = 'живой'
+      } else if(info === 'о здравии' && select === 'усопшая') {
+        current = 'живая'
+      } else if(info === 'о упокоении' && select === 'живой') {
+        current = 'усопший'
+      } else {
+        current = 'усопшая'
+      }
+
+      setSelect(current);
+      setOtherHealth(['---']);
+      setOtherAge(['---']);
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle, alignItems: 'center' }}>
           <TouchableHighlight
@@ -35,14 +66,14 @@ export default function Add({ navigation, route }) {
           <KeyboardAvoidingView behavior={Platform.Os == "ios" ? "padding" : "height"} style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1 }}>
-              <RadioComponent question='тип синодика' answers={['о здравии', 'о упокоении']} />
-              <RadioComponent question='пол' answers={['мужской', 'женский']} />
+              <RadioComponent question='тип синодика' answers={['о здравии', 'о упокоении']} {...{ globalStatusHandler }} />
+              <RadioComponent question='пол' answers={['мужской', 'женский']} {...{ globalStatusHandler }} />
               <View style={{ flex: 1 , marginVertical: 6, justifyContent: 'center', alignItems: 'center', width: '100%'}} >
                 <Text style={{ fontSize: 20, color: COLORS.light, fontWeight: '700', paddingLeft: 20 }} >временный статус</Text>
               </View>
               <View style={{ marginVertical: 10, height: 60, flexDirection: 'row', flex: 1 , justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                <SelectFormComponent type='health' />
-                <SelectFormComponent type='age' />
+                <SelectFormComponent {...{ select }}  title='health' type={otherHealth} setType={ setOtherHealth } />
+                <SelectFormComponent {...{ select }} title='age' type={otherAge} setType={ setOtherAge } />
               </View>
               <InputFormComponent question='имя' />
               <InputFormComponent question='фамилия' />
