@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, ScrollView, Image, SafeAreaView } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, Image } from 'react-native';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
-import Animated from 'react-native-reanimated';
+import Animated, { Easing, and, greaterOrEq, or, lessOrEq, neq } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 const { Value, set, useCode, interpolate, Extrapolate, cond, eq, block, event, add, sub } = Animated;
-import { timing } from "react-native-redash";
+import { usePanGestureHandler, timing } from "react-native-redash";
 
 const { width, height } = Dimensions.get('window');
 const SIZE = width - 130;
@@ -16,9 +16,10 @@ const CARD_HEIGHT = SIZE*1.8;
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: (height/2) -40,
-    marginTop: -CARD_HEIGHT/2,
-    marginLeft: -CARD_WIDTH/2,
+    top: 0,
+    left: 0,
+    marginTop: 50,
+    marginLeft: width/2 - CARD_WIDTH/2,
     justifyContent: 'flex-start',
     alignItems: 'center',
     borderRadius: 18,
@@ -34,82 +35,75 @@ const styles = StyleSheet.create({
   },
 });
 
+const withOffset = ({ value, offset, state }) => {
+  const safeOffset = new Value(0);
+  return cond(
+    eq(state, State.ACTIVE),
+    set(safeOffset, value),
+    set(safeOffset, timing({
+      duration: 600,
+      from: safeOffset,
+      to: offset,
+      easing: Easing.linear,
+    }))
+  )
+}
+
+
 export default function Card(props) {
 
-  const { type, username } = props;
+  const { type, username, offsets, index, navigation } = props;
 
-  const gestureState = new Value(State.UNDETERMINED);
-  const dragX = new Value(0);
-  const dragY = new Value(0);
-  const transX = new Value(0);
-  const transY = new Value(0);
+  const { 
+    gestureHandler,
+    state,
+    translation
+   } = usePanGestureHandler();
 
-  const gestureHandler = event([
+   const currentOffset = offsets[index];
+
+   const translateX = withOffset(
+     {
+       value: translation.x,
+       offset: currentOffset.x,
+       state
+     }
+   );
+
+   const translateY = withOffset(
     {
-      nativeEvent: {
-        state: gestureState,
-        translationY: dragY,
-        translationX: dragX,
-      },
-    },
-  ]);
+      value: translation.y,
+      offset: currentOffset.y,
+      state
+    }
+  );
 
-  const prevDragX = new Value(0);
-  const prevDragY = new Value(0);
+   const zIndex = cond(eq(state, State.ACTIVE), 100, 1);
 
-  const _transY = block([
-    cond(
-      eq(gestureState, State.ACTIVE),
-      [
-        set(transY, add(transY, sub(dragY, prevDragY))),
-        set(prevDragY, dragY),
-      ],
-      set(prevDragY, 0)
-    ),
-    transY,
-  ]);
-
-  const _transX = block([
-    cond(
-      eq(gestureState, State.ACTIVE),
-      [
-        set(transX, add(transX, sub(dragX, prevDragX))),
-        set(prevDragX, dragX),
-      ],
-      set(prevDragX, 0)
-    ),
-    transX,
-  ]);
-
-  const scale = props.type === 'о здравии' ? interpolate(_transX, {
-    inputRange: [-300, 0, 300],
-    outputRange: [.8, 1,.8],
-    extrapolate: Extrapolate.CLAMP,
-  }) : interpolate(_transX, {
-    inputRange: [-300, (width/2 - width/1.2), 300],
-    outputRange: [.8, 1, .8],
-    extrapolate: Extrapolate.CLAMP,
-  });
-
-  const cardColor = props.type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
+  const cardColor = type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
 
   return (
-    <TouchableHighlight style={{ zIndex: props.type === 'о здравии' ? 100 : 1 }} activeOpacity={0.6} underlayColor="#DDDDDD" onPress={() => props.navigation.navigate('listNames', { cardColor, type, username })}>
-      <PanGestureHandler onGestureEvent={ gestureHandler } onHandlerStateChange={ gestureHandler } >
+      <PanGestureHandler {...gestureHandler}>
         <Animated.View 
           style={[
             styles.container,
-            { left: props.type === 'о здравии' ? width/2 : width/1.2,
-              transform: [ 
-              { scale },
-              { translateX: _transX }] }
+            {
+              transform: [
+                { translateX },
+                { translateY },
+              ],
+              zIndex
+            }
             ]}>
-            <View style={{ marginTop: 10, marginBottom: 60, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
-              <Image source={require('../assets/iconForCard.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
-            </View>
-            <Text style={{fontSize: 22, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }}>{props.type}</Text>
+            <TouchableHighlight underlayColor={COLORS.dark} onPress={() => navigation.navigate('listNames', { cardColor, type, username })}>
+              <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
+                <View style={{ marginTop: 10, marginBottom: 60, width: CARD_WIDTH/1.5, height: CARD_WIDTH/1.5, justifyContent: 'center', alignItems: 'center' }}>
+                  <Image source={require('../assets/iconForCard.png')} style={{ width: '100%', height: '100%' }} resizeMode='contain' />
+                </View>
+                <Text style={{fontSize: 22, fontFamily: 'Montserrat-Bold', color: cardColor, textTransform: 'uppercase' }}>{type}</Text>
+              </View>
+            </TouchableHighlight>
           </Animated.View>
         </PanGestureHandler>
-      </TouchableHighlight>
   );
 }

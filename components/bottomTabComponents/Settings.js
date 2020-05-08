@@ -22,16 +22,17 @@ const cards = [
   },
 ]
 
-const offsets = cards.map((_, index) => {
-  return (
-    {
-      x: new Animated.Value(index === 0 ? 60 : 0),
-      y: new Animated.Value(index === 0 ? 60 : 0),
-    }
-  )
-})
 
 export default function Settings ({ navigation, route }) {
+
+    const offsets = cards.map((_, index) => {
+      return (
+        {
+          x: new Animated.Value(index === 0 ? CARD_SIZE : 0),
+          y: new Animated.Value(index === 0 ? CARD_SIZE : 0),
+        }
+      )
+    });
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.middle, alignItems: 'center', justifyContent: 'center' }}>

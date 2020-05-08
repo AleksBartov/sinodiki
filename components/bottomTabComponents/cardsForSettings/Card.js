@@ -1,33 +1,32 @@
 import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { COLORS } from '../../../constants/colors';
-import Animated, { add, event, Value } from 'react-native-reanimated';
+import Animated, { add, event, Value, cond, eq, block, set, useCode, multiply, max, divide, and, floor, round } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { panGestureHandler } from 'react-native-redash';
 
 const { width, height } = Dimensions.get('window')
 
 const CARD_SIZE = width - 100;
 
+
 export default function Card ({ card, index, offsets }) {
-    const gestureState = new Value(State.UNDETERMINED);
-    const dragX = new Value(0);
-    const dragY = new Value(0);
-    const gestureHandler = event([
-        {
-            nativeEvent: {
-                state: gestureState,
-                translationX: dragX,
-                translationY: dragY
-            }
-        }
-    ])
 
-    const translateX = add(offsets[index].x, dragX);
+    const {
+        gestureHandler,
+        state,
+        translationX,
+        translationY
+    } = panGestureHandler();
 
-    const translateY = add(offsets[index].y, dragY);
-  
+    const zIndex = cond(eq(state, State.ACTIVE), 100, 1);
+
+    const translateX = add(offsets[index].x, translationX);
+    const translateY = add(offsets[index].y, translationY);
+
+    
     return (
-        <PanGestureHandler onGestureEvent={gestureHandler} onHandlerStateChange={gestureHandler} >
+        <PanGestureHandler {...gestureHandler} >
             <Animated.View 
                 style={{
                     position: 'absolute',
@@ -44,8 +43,9 @@ export default function Card ({ card, index, offsets }) {
                     backgroundColor: card.backgroundColor,
                     transform: [
                         { translateX },
-                        { translateY },
-                    ]
+                        { translateY }
+                    ],
+                    zIndex
                 }} >
                 <Text style={{ color: card.color }}>{ card.title }</Text>
             </Animated.View>
