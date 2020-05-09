@@ -2,23 +2,21 @@ import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, Image } from 'react-native';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
-import Animated, { Easing, and, greaterOrEq, or, lessOrEq, neq } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-
-const { Value, set, useCode, interpolate, Extrapolate, cond, eq, block, event, add, sub } = Animated;
-import { usePanGestureHandler, timing } from "react-native-redash";
+import Animated, { cond, Value, useCode, block, eq, set, add, Easing } from 'react-native-reanimated';
+import { panGestureHandler, timing } from 'react-native-redash';
 
 const { width, height } = Dimensions.get('window');
 const SIZE = width - 130;
 const CARD_WIDTH = SIZE;
-const CARD_HEIGHT = SIZE*1.8;
+const CARD_HEIGHT = SIZE*1.5;
 
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,
     left: 0,
-    marginTop: 50,
+    marginTop: 90,
     marginLeft: width/2 - CARD_WIDTH/2,
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -35,55 +33,47 @@ const styles = StyleSheet.create({
   },
 });
 
-const withOffset = ({ value, offset, state }) => {
-  const safeOffset = new Value(0);
-  return cond(
-    eq(state, State.ACTIVE),
-    set(safeOffset, value),
-    set(safeOffset, timing({
-      duration: 600,
-      from: safeOffset,
-      to: offset,
-      easing: Easing.linear,
-    }))
-  )
-}
-
-
 export default function Card(props) {
 
-  const { type, username, offsets, index, navigation } = props;
+  const { type,
+    username,
+    offsets,
+    index,
+    navigation,
+    opacities,
+    zIndexes,
+    scales,
+    } = props;
 
-  const { 
-    gestureHandler,
-    state,
-    translation
-   } = usePanGestureHandler();
-
-   const currentOffset = offsets[index];
-
-   const translateX = withOffset(
-     {
-       value: translation.x,
-       offset: currentOffset.x,
-       state
-     }
-   );
-
-   const translateY = withOffset(
-    {
-      value: translation.y,
-      offset: currentOffset.y,
-      state
-    }
-  );
-
-   const zIndex = cond(eq(state, State.ACTIVE), 100, 1);
+  const [ opacity, opacityTwo ] = opacities;
+  const [ scale, scaleTwo ] = scales;
+  const [ zIndex, zIndexTwo ] = zIndexes;
 
   const cardColor = type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
 
+  const { gestureHandler, state, translation } = panGestureHandler();
+  const translateX = new Value(0);
+  const translateY = new Value( index === 0 ? 0 : 50 );
+
+  useCode(() => block(
+    cond(
+      eq( state, State.ACTIVE),
+      [
+        set(translateX, translation.x),
+        set(translateY, translation.y),
+      ],
+      cond(
+        eq( state, State.END),
+        [
+          set(translateX, timing({ duration: 500, from: translation.x, to: 0, easing: Easing.bezier(.32,1.25,.94,.93) })),
+          set(translateY, timing({ duration: 500, from: translation.y, to: 0, easing: Easing.bezier(.32,1.25,.94,.93) })),
+        ]
+      )
+    )
+  ), [])
+
   return (
-      <PanGestureHandler {...gestureHandler}>
+      <PanGestureHandler {...gestureHandler} >
         <Animated.View 
           style={[
             styles.container,
@@ -91,8 +81,10 @@ export default function Card(props) {
               transform: [
                 { translateX },
                 { translateY },
+                { scale: index === 0 ? scale : scaleTwo },
               ],
-              zIndex
+              zIndex: index === 0 ? zIndex : zIndexTwo,
+              opacity: index === 0 ? opacity : opacityTwo,
             }
             ]}>
             <TouchableHighlight underlayColor={COLORS.dark} onPress={() => navigation.navigate('listNames', { cardColor, type, username })}>
