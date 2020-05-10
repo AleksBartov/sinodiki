@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, Image } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Platform, TouchableHighlight, Image, Alert } from 'react-native';
 import { COLORS } from '../constants/colors';
 import { customFonts } from '../App';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import Animated, { cond, Value, useCode, block, eq, set, add, Easing } from 'react-native-reanimated';
+import Animated, { cond, Value, useCode, block, eq, set, add, Easing, call } from 'react-native-reanimated';
 import { panGestureHandler, timing } from 'react-native-redash';
 
 const { width, height } = Dimensions.get('window');
@@ -43,34 +43,35 @@ export default function Card(props) {
     opacities,
     zIndexes,
     scales,
+    yTranslations,
     } = props;
 
   const [ opacity, opacityTwo ] = opacities;
   const [ scale, scaleTwo ] = scales;
   const [ zIndex, zIndexTwo ] = zIndexes;
+  const [ translateY, translateYTwo ] = yTranslations;
 
   const cardColor = type === 'о здравии' ? COLORS.green : COLORS.deepBlue;
 
   const { gestureHandler, state, translation } = panGestureHandler();
   const translateX = new Value(0);
-  const translateY = new Value( index === 0 ? 0 : 50 );
 
   useCode(() => block(
-    cond(
-      eq( state, State.ACTIVE),
-      [
-        set(translateX, translation.x),
-        set(translateY, translation.y),
-      ],
       cond(
-        eq( state, State.END),
+        eq( state, State.ACTIVE),
         [
-          set(translateX, timing({ duration: 500, from: translation.x, to: 0, easing: Easing.bezier(.32,1.25,.94,.93) })),
-          set(translateY, timing({ duration: 500, from: translation.y, to: 0, easing: Easing.bezier(.32,1.25,.94,.93) })),
-        ]
+          set(translateX, translation.x),
+          set(translateY, translation.y),
+        ],
+        cond(
+          eq( state, State.END),
+          [
+            set(translateX, timing({ duration: 500, from: translation.x, to: 0, easing: Easing.bezier(.32,1.25,.94,.93) })),
+            set(translateY, timing({ duration: 500, from: translation.y, to: 0, easing: Easing.bezier(.32,1.25,.94,.93) })),
+          ]
+        )
       )
-    )
-  ), [])
+    ), [translateYTwo, translateY]);
 
   return (
       <PanGestureHandler {...gestureHandler} >
@@ -80,7 +81,7 @@ export default function Card(props) {
             {
               transform: [
                 { translateX },
-                { translateY },
+                { translateY: index === 0 ? translateY : translateYTwo },
                 { scale: index === 0 ? scale : scaleTwo },
               ],
               zIndex: index === 0 ? zIndex : zIndexTwo,

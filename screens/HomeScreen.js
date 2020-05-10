@@ -3,12 +3,12 @@ import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } fr
 import Card from '../components/Card';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../App'
-import Animated, { Value, add, cond, eq, set, or, greaterThan, lessThan, Easing, and, interpolate, useCode, block, neq } from 'react-native-reanimated';
+import Animated, { Value } from 'react-native-reanimated';
 
-import { customFonts } from '../App';
 import { COLORS } from '../constants/colors';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import { panGestureHandler, timing, useValues } from 'react-native-redash';
+import { withSpringTransition, withTransition } from 'react-native-redash';
+import OZdraviiCard from '../components/OZdraviiCard';
+import OUpokoeniiCard from '../components/OUpokoeniiCard';
 
 const { width } = Dimensions.get('window');
 
@@ -35,43 +35,21 @@ const styles = StyleSheet.create({
   }
 });
 
-const cards = [
-  {
-    type: 'о здравии'
-  },
-  {
-    type: 'о упокоении'
-  }
-]
-
-const offsets = cards.map((_, index) => {
-  return (
-    {
-      x: new Value(0),
-      y: new Value( index === 0 ? 0 : 50 ),
-    }
-  )
-});
 
 
 export default function HomeScreen({navigation, route}) {
 
   const { signOut } = React.useContext(AuthContext);
 
-  const scales = [
-    new Value(1.2),
-    new Value(1)
-  ];
+  const STEP = 140;
 
-  const opacities = [
-    new Value(1),
-    new Value(.5)
-  ]
+  const activeOne = new Value(0);
+  const activeTwo = new Value(0);
+  const secondActive = new Value(false);
 
-  const zIndexes = [
-    new Value(100),
-    new Value(1)
-  ]
+  const transitionOne = withTransition(activeOne);
+  const transitionTwo = withTransition(activeTwo);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,14 +67,40 @@ export default function HomeScreen({navigation, route}) {
         </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }} >
-        {
-          cards.map((card, index) => {
-            return (
-              <Card key={index} type={card.type} username={route.params?.username} {...{ zIndexes, navigation, offsets, index, scales, opacities}} />
-            )
-          })
-        }
+        <OUpokoeniiCard cardColor={COLORS.deepBlue} type='О УПОКОЕНИИ' username={route.params?.username} {...{ activeTwo, activeOne, transitionTwo, STEP, secondActive, navigation }}/>
+        <OZdraviiCard cardColor={COLORS.green} type='О ЗДРАВИИ' username={route.params?.username} {...{ activeOne, activeTwo, transitionOne, STEP, secondActive, navigation }} />
       </View>
     </SafeAreaView>
   );
 }
+
+
+
+
+/* const scales = [
+  new Value(1.2),
+  new Value(1)
+];
+
+const opacities = [
+  new Value(1),
+  new Value(.5)
+]
+
+const zIndexes = [
+  new Value(100),
+  new Value(1)
+]
+
+const yTranslations = [
+  new Value(0),
+  new Value(50)
+]
+
+{
+  cards.map((card, index) => {
+    return (
+      <Card key={index} type={card.type} username={route.params?.username} {...{ zIndexes, navigation, offsets, index, scales, opacities, yTranslations}} />
+    )
+  })
+} */
