@@ -193,15 +193,3 @@ export default function SignInScreen({ navigation, route }) {
 
   return <></>
 }
-
-
-
-/* <TextInput
-  style={styles.input}
-  placeholder="имя"
-  value={username}
-  onChangeText={setUsername}>
-  <ImageBackground 
-    source={require('../assets/icon.png')}
-    style={styles.imageAsBckg} />
-</TextInput> */

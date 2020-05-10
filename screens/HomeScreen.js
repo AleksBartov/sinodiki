@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
-import Card from '../components/Card';
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../App'
-import Animated, { Value } from 'react-native-reanimated';
-
+import { Value, Transition, Transitioning } from 'react-native-reanimated';
 import { COLORS } from '../constants/colors';
-import { withSpringTransition, withTransition } from 'react-native-redash';
+import { withTransition } from 'react-native-redash';
 import OZdraviiCard from '../components/OZdraviiCard';
 import OUpokoeniiCard from '../components/OUpokoeniiCard';
 
@@ -24,6 +22,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  logoContainer: {
+    marginLeft: 15,
+  },
   logo: {
 
   },
@@ -38,10 +39,57 @@ const styles = StyleSheet.create({
 
 
 export default function HomeScreen({navigation, route}) {
+  const transition = <Transition.Sequence>
+    <Transition.In durationMs={1000} type='scale' interpolation='easeOut' />
+  </Transition.Sequence>
+  const ref = React.useRef();
+  const myKey = 'apiKey=sKw_oqVSmdk0cj8XolfkSyap__JKRPLt';
+  const username = route.params?.username;
+  const { signOut, myNames, setMyNames } = React.useContext(AuthContext);
 
-  const { signOut } = React.useContext(AuthContext);
+  React.useEffect(() => {
+    fetch(`https://api.mlab.com/api/1/databases/sinodik/collections/${username}?${myKey}`)
+    .then(data => data.json())
+    .then(allNamesArr => {
+        if (allNamesArr === undefined) {
+            console.log('no data');
+            setMyNames('no data yet...');
+            return;
+          }
 
-  const STEP = 140;
+          // CREATE SPECIAL OBJECT TO HOLDE ONLY UNICE DATA
+        let GROUPS = new Set();
+        let length = 0;
+        allNamesArr.forEach(person=>person.group.forEach(g=>GROUPS.add(g)));
+        let structuredArray = [...GROUPS]
+          .sort()  // here we can sort groups
+          .map(group=>{
+            return (
+              {
+                title: group,
+                data: []
+              }
+            )
+          });
+
+          allNamesArr
+          .forEach(person => {
+            length++;
+            if(GROUPS.has(person.group[0])) {
+              structuredArray.forEach(obj=>{
+                if(obj.title === person.group[0]) {
+                  obj.data.push(person);
+                };
+              })
+            }
+          });
+        // here we have to transform data for sectionList by Array.reduce()
+        ref.current.animateNextTransition();
+        setMyNames(structuredArray);
+    });
+  }, []);
+
+  const STEP = 80;
 
   const activeOne = new Value(0);
   const activeTwo = new Value(0);
@@ -66,10 +114,21 @@ export default function HomeScreen({navigation, route}) {
           <Ionicons name="ios-log-out" size={34} color={COLORS.deepBlue} onPress={signOut} />
         </TouchableOpacity>
       </View>
-      <View style={{ flex: 1 }} >
-        <OUpokoeniiCard cardColor={COLORS.deepBlue} type='О УПОКОЕНИИ' username={route.params?.username} {...{ activeTwo, activeOne, transitionTwo, STEP, secondActive, navigation }}/>
-        <OZdraviiCard cardColor={COLORS.green} type='О ЗДРАВИИ' username={route.params?.username} {...{ activeOne, activeTwo, transitionOne, STEP, secondActive, navigation }} />
-      </View>
+      <Transitioning.View
+          ref={ref}
+          transition={transition}
+          style={{ flex: 1 }}
+          >
+        {
+          !myNames ? <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator color={COLORS.lightest} size='large' />
+          </View> : ( <>
+              <OUpokoeniiCard cardColor={COLORS.deepBlue} type='о упокоении' {...{ username, activeTwo, activeOne, transitionTwo, STEP, secondActive, navigation }}/>
+              <OZdraviiCard cardColor={COLORS.green} type='о здравии' {...{ username, activeOne, activeTwo, transitionOne, STEP, secondActive, navigation }} />
+              </>
+              )
+            }
+      </Transitioning.View>
     </SafeAreaView>
   );
 }

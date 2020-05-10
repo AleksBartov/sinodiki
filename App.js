@@ -25,7 +25,6 @@ const Stack = createStackNavigator();
 export default function App({ navigation }) {
 
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
-  const [ subtitleNumber, setSubtitleNumber ] = React.useState(0);
 
   const loadFontsAsync = async () => {
     await Font.loadAsync(customFonts);
@@ -74,6 +73,16 @@ export default function App({ navigation }) {
             ...prevState,
             modalOpened: true,
           };
+        case 'NAMES_DOWNLODED':
+          return {
+            ...prevState,
+            myNames: action.token,
+          };
+        case 'SUBTITLE_NUMBERS_CHANGE':
+          return {
+            ...prevState,
+            subtitleNumber: action.token,
+          };
         case 'CLOSE_SIGN_IN_MODAL':
           return {
             ...prevState,
@@ -86,6 +95,8 @@ export default function App({ navigation }) {
       isSignout: false,
       userToken: null,
       modalOpened: false,
+      myNames: false,
+      subtitleNumber: 0,
     }
   );
 
@@ -120,6 +131,8 @@ export default function App({ navigation }) {
 
 const authContext = React.useMemo(
     () => ({
+      setSubtitleNumber: n => dispatch({ type: 'SUBTITLE_NUMBERS_CHANGE', token: n }),
+      setMyNames: names => dispatch({ type: 'NAMES_DOWNLODED', token: names }),
       signIn: async data => {
         const myKey = 'apiKey=sKw_oqVSmdk0cj8XolfkSyap__JKRPLt';
         const myCollection = 'members';
@@ -159,10 +172,11 @@ const authContext = React.useMemo(
       },
       closeSignInModal: () => dispatch({ type: 'CLOSE_SIGN_IN_MODAL' }),
       openModal: state.modalOpened,
+      myNames: state.myNames,
       setNumberNames: (num) => setSubtitleNumber(num),
-      subtitleNumber,
+      subtitleNumber: state.subtitleNumber,
     }),
-    [state.modalOpened, subtitleNumber]
+    [state.modalOpened, state.subtitleNumber, state.myNames]
   );
 
   return (

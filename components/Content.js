@@ -8,7 +8,7 @@ const { height } = Dimensions.get('window');
 
 export default function Content(props) {
 
-  const { setNumberNames } = React.useContext(AuthContext);
+  const { myNames, setSubtitleNumber } = React.useContext(AuthContext);
 
   const myKey = 'apiKey=sKw_oqVSmdk0cj8XolfkSyap__JKRPLt';
   // const myCollection = 'iereiAleksandrBartov';
@@ -17,7 +17,7 @@ export default function Content(props) {
   const [haveAnyRecord, setHaveAnyRecord] = React.useState(false);
   
   React.useEffect(() => {
-    fetch(`https://api.mlab.com/api/1/databases/sinodik/collections/${props.username}?${myKey}`)
+    /* fetch(`https://api.mlab.com/api/1/databases/sinodik/collections/${props.username}?${myKey}`)
     .then(data => data.json())
     .then(allNamesArr => {
         if (allNamesArr.length<1) {
@@ -31,6 +31,7 @@ export default function Content(props) {
         let length = 0;
         allNamesArr.forEach(person=>person.group.forEach(g=>GROUPS.add(g)));
         let structuredArray = [...GROUPS]
+          .sort()
           .map(group=>{
             return (
               {
@@ -46,15 +47,16 @@ export default function Content(props) {
             length++;
             if(GROUPS.has(person.group[0])) {
               structuredArray.forEach(obj=>{
-                if(obj.title === person.group[0]) obj.data.push(person);
+                if(obj.title === person.group[0]) {
+                  obj.data.push(person);
+                };
               })
             }
-          });
+          }); */
         // here we have to transform data for sectionList by Array.reduce()
-        setNames(structuredArray);
-        setNumberNames(length);
-    });
-  }, []);
+        setNames(myNames);
+        setSubtitleNumber(myNames.length);
+    }, []);
 
   return (
     <View>{

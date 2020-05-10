@@ -6,6 +6,7 @@ import { COLORS } from '../constants/colors'
 import { panGestureHandler, mix, timing } from 'react-native-redash'
 
 const { width } = Dimensions.get('window')
+const CARD_WIDTH = 200;
 
 const OUpokoeniiCard = ({ activeTwo, activeOne, transitionTwo, STEP, navigation, cardColor, type, username }) => {
     const translateX = new Value(0);
@@ -61,12 +62,18 @@ const OUpokoeniiCard = ({ activeTwo, activeOne, transitionTwo, STEP, navigation,
         <PanGestureHandler {...gestureHandler} >
             <Animated.View style={{
                 position: 'absolute',
-                width: 200,
-                height: 260,
-                borderRadius: 20,
+                width: CARD_WIDTH,
+                height: 300,
+                borderRadius: 16,
                 backgroundColor: COLORS.dark,
                 justifyContent: 'center',
                 alignItems: 'center',
+                borderColor: COLORS.middle,
+                shadowColor: COLORS.light,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: .6,
+                shadowRadius: 10,
+                elevation: (Platform.OS === 'android') ? 50 : 0,
                 marginTop,
                 marginLeft: width/2-100,
                 transform: [

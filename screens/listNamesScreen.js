@@ -51,7 +51,7 @@ const Tab = createBottomTabNavigator();
 
 export default function listNamesScreen({ navigation, route }) {
 
-  const { subtitleNumber, setNumberNames } = React.useContext(AuthContext);
+  const { subtitleNumber, setSubtitleNumber } = React.useContext(AuthContext);
 
   React.useEffect(() => {
     ref.current.animateNextTransition();
@@ -59,7 +59,7 @@ export default function listNamesScreen({ navigation, route }) {
 
   const ref = React.useRef();
   const transition = <Transition.Together>
-                        <Transition.In type='slide-top' durationMs={2000} />
+                        <Transition.In type='fade' durationMs={300} interpolation='easeIn' />
                         <Transition.Change />
                         <Transition.Out />
                     </Transition.Together>
@@ -70,7 +70,7 @@ export default function listNamesScreen({ navigation, route }) {
           <TouchableHighlight
           style={{ position: 'absolute', top: 30, left: 10, zIndex: 10 }}
           onPress={() => {
-            setNumberNames(0);
+            setSubtitleNumber(0);
             navigation.goBack();
           }}>
             <Ionicons name="ios-arrow-round-back" size={34} color={COLORS.deepBlue} />
